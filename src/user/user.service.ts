@@ -52,9 +52,15 @@ export class UserService {
         })
     }
 
-    async patch(data: UpdatePatchUserDTO, id:number) 
+    async patch({name, email, password, birthAt}: UpdatePatchUserDTO, id:number) 
     {
-    
+        const data:any =  {}
+
+        if(name) data.name=name;
+        if(email) data.email=email;
+        if(password) data.password=password;
+        if(birthAt) data.birthAt=new Date(birthAt);
+
         return this.prisma.user.update({
             where:{
                 id
