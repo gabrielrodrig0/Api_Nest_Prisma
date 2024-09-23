@@ -19,14 +19,14 @@ export class UserController {
     }
 
     @Get(':id')
-    async getOne(@Param('id', ParseIntPipe) id)
+    async getOne(@Param('id', ParseIntPipe) id:number)
     {
         return this.userService.getOne(id);
     }
 
     //Update Password
     @Patch(':id')
-    async update(@Body() body:UpdatePatchUserDTO, @Param('id', ParseIntPipe) id)
+    async update(@Body() body:UpdatePatchUserDTO, @Param('id', ParseIntPipe) id:number)
     {
         return this.userService.update(body, id);
     }
