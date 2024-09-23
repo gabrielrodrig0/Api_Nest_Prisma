@@ -12,6 +12,7 @@ model User {
   name      String    @db.VarChar(63)
   email     String    @unique(map: "email_UNIQUE") @db.VarChar(63)
   password  String    @db.VarChar(63)
+  birthAt   DateTime?  @db.Date
   updatedAt DateTime? @default(now()) @db.Timestamp(0)
   createdAt DateTime? @default(now()) @db.Timestamp(0)
   //Serve pra mapear o modelo, no caso o modelo está diferente da tabela (users), por padrão usamos o PascalCase no modelo, por isso mapeamos 
