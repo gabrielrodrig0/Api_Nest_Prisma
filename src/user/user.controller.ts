@@ -5,6 +5,7 @@ import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
 import { LogInterceptor } from "src/interceptors/log.interceptor";
 import { ClassInterceptor } from "src/interceptors/class.interceptor";
+import { ParamId } from "src/decorators/param-id.decorator";
 
 @Controller('users')
 export class UserController {
@@ -22,27 +23,27 @@ export class UserController {
 
     @UseInterceptors(ClassInterceptor)
     @Get(':id')
-    async getOne(@Param('id', ParseIntPipe) id:number)
+    async getOne(@ParamId()id:number)
     {
         return this.userService.getOne(id);
     }
 
     //Update Password
     @Patch(':id')
-    async updatePatch(@Body() body:UpdatePatchUserDTO, @Param('id', ParseIntPipe) id:number)
+    async updatePatch(@Body() body:UpdatePatchUserDTO, @ParamId() id:number)
     {
         return this.userService.patch(body, id);
     }
 
     //Update ALL data
     @Put(':id')
-    async updatePut(@Body()body:UpdatePutUserDTO, @Param('id', ParseIntPipe) id:number)
+    async updatePut(@Body()body:UpdatePutUserDTO, @ParamId() id:number)
     {
         return this.userService.put(body, id);
     }
 
     @Delete(':id')
-    async delete(@Param('id', ParseIntPipe) id:number)
+    async delete(@ParamId() id:number)
     {
         return this.userService.delete(id);
     }
