@@ -22,7 +22,7 @@ export class UserController {
         return this.userService.create(data);
     } 
 
-    @Roles(Role.Admin)
+    @Roles(Role.Admin, Role.User)
     @Get()
     async getUsers(){
         return this.userService.getUsers();
