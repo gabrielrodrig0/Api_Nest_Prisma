@@ -9,7 +9,7 @@ export class UserService {
 
     constructor(private readonly prisma:PrismaService){}
 
-    async create({name, email, password, birthAt}:CreateUserDTO) {
+    async create({name, email, password, birthAt, role}:CreateUserDTO) {
         
         
         return await this.prisma.user.create({
@@ -17,8 +17,9 @@ export class UserService {
                  name,
                  email,
                  password,
-                 birthAt: birthAt?new Date(birthAt):null  
-            }, //Após inserir ele faz um select para mostrar um o mais dados que você queira retornar, nocaso quero apenas o id
+                 birthAt: birthAt?new Date(birthAt):null,
+                 role
+            }, 
            
         })
     }
@@ -37,7 +38,7 @@ export class UserService {
         
     }
 
-    async put({name,email, password, birthAt}:UpdatePutUserDTO, id:number)
+    async put({name,email, password, birthAt, role}:UpdatePutUserDTO, id:number)
     {
         return this.prisma.user.update({
             where: {
@@ -47,12 +48,13 @@ export class UserService {
                 name, 
                 email, 
                 password,
-                birthAt:birthAt ? new Date(birthAt):null
+                birthAt:birthAt ? new Date(birthAt):null,
+                role
             }
         })
     }
 
-    async patch({name, email, password, birthAt}: UpdatePatchUserDTO, id:number) 
+    async patch({name, email, password, birthAt, role}: UpdatePatchUserDTO, id:number) 
     {
         const data:any =  {}
 
@@ -60,6 +62,8 @@ export class UserService {
         if(email) data.email=email;
         if(password) data.password=password;
         if(birthAt) data.birthAt=new Date(birthAt);
+        if(role) data.role=role;
+        
 
         return this.prisma.user.update({
             where:{
