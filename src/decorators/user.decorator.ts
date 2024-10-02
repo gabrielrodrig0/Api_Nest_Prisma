@@ -5,9 +5,15 @@ export const User = createParamDecorator(
       const request = context.switchToHttp().getRequest();
 
       if(!request.user)
-      {
-        throw new NotFoundException("Usuário não encontrado!")
+        {
+          throw new NotFoundException("Usuário não encontrado!")
       }
-      return request.user;
+
+      if(!data)
+      {
+        return request.user;
+      }
+      
+      return request.user[data];
     },
   );

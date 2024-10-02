@@ -1,4 +1,4 @@
-import { BadRequestException, CanActivate, ExecutionContext, Injectable, NotFoundException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, NotFoundException } from "@nestjs/common";
 import { AuthService } from "src/auth/auth.service";
 import { UserService } from "src/user/user.service";
 
