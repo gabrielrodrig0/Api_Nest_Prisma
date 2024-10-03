@@ -10,8 +10,8 @@ import { Role } from "src/enums/roles.enum";
 import { RoleGuard } from "src/guards/role.guard";
 import { AuthGuard } from "src/guards/auth.guard";
 
-
 @UseGuards(AuthGuard,RoleGuard)
+
 @Controller('users')
 export class UserController {
     constructor(private readonly userService:UserService){}
@@ -22,22 +22,20 @@ export class UserController {
         return this.userService.create(data);
     } 
 
-    @Roles(Role.Admin, Role.User)
+    @Roles(Role.Admin)
     @Get()
     async getUsers(){
         return this.userService.getUsers();
     }
 
-    @Roles(Role.Admin)
-    @UseInterceptors(ClassInterceptor)
+    @Roles(Role.Admin, Role.User)
     @Get(':id')
-    async getOne(@ParamId()id:number)
+    async getOne(@ParamId() id:number)
     {
-        return this.userService.getOne(id);
+        return this.userService.getOne(id)
     }
 
     @Roles(Role.Admin)
-    //Update Password
     @Patch(':id')
     async updatePatch(@Body() body:UpdatePatchUserDTO, @ParamId() id:number)
     {
