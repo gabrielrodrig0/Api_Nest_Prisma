@@ -1,17 +1,19 @@
-import { Controller, Post, Body, Headers, UseGuards } from "@nestjs/common";
+import { Controller, Post, Body, Headers, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from "@nestjs/common";
 import { AuthLoginDTO } from "./dto/auth-login-dto";
 import { AuthRegisterDTO } from "./dto/auth-register-dto";
 import { AuthForgetDTO } from "./dto/auth-forget-dto";
 import { AuthResetDTO } from "./dto/auth-reset-dto";
-import { UserService } from "src/user/user.service";
 import { AuthService } from "./auth.service";
 import { AuthGuard } from "src/guards/auth.guard";
 import { User } from "src/decorators/user.decorator";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { FileService } from "src/file/file.service";
+
 
 @Controller('auth')
 export class AuthController{
 
-    constructor(private readonly userService:UserService, private readonly authService:AuthService){}
+    constructor(private readonly authService:AuthService, private readonly fileService:FileService){}
 
     @Post('login')
     async login(@Body() {email, password}:AuthLoginDTO)
@@ -42,6 +44,19 @@ export class AuthController{
     async me(@User('id') user)
     {
         return {user}
+    }
+
+    @UseInterceptors(FileInterceptor('file'))
+    @UseGuards(AuthGuard)
+    @Post('photo')
+    async uploadPhoto(@User() user, @UploadedFile() file: Express.Multer.File) {
+       const path = `C:\\Users\\3470648\\Desktop\\Api_Nest_Prisma\\src\\storage\\photos\\photo-${user.id}.png`;
+      try {
+        await this.fileService.upload(file, path);
+      } catch (error) {
+        throw new BadRequestException('Arquivo em formato errado')
+      }
+       return {success:"true", msg:"Arquivo armazenado com sucesso!"}
     }
 
 }
