@@ -10,7 +10,7 @@ import { PrismaModule } from "src/prisma/prisma.module";
 //npm i @nestjs/jwt
 @Module({
     imports: [JwtModule.register({
-        secret:"W$C5x#$3vaE!hUCZ7zC9GW?bW2p+Xag7"
+        secret: process.env.JWT_SECRET
     }),
     forwardRef(()=>UserModule),
     PrismaModule
