@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Headers, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from "@nestjs/common";
+import { Controller, Post, Body, Headers, UseGuards, UseInterceptors, UploadedFile, BadRequestException, UploadedFiles } from "@nestjs/common";
 import { AuthLoginDTO } from "./dto/auth-login-dto";
 import { AuthRegisterDTO } from "./dto/auth-register-dto";
 import { AuthForgetDTO } from "./dto/auth-forget-dto";
@@ -8,6 +8,7 @@ import { AuthGuard } from "src/guards/auth.guard";
 import { User } from "src/decorators/user.decorator";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { FileService } from "src/file/file.service";
+import { FileFieldsInterceptor } from "@nestjs/platform-express";
 
 
 @Controller('auth')
@@ -57,6 +58,19 @@ export class AuthController{
         throw new BadRequestException('Arquivo em formato errado')
       }
        return {success:"true", msg:"Arquivo armazenado com sucesso!"}
+    }
+
+    @UseInterceptors(FileFieldsInterceptor([{
+        name:'photo',
+        maxCount:1
+    },{
+        name: 'documents',
+        maxCount:10
+    }]))
+    @UseGuards(AuthGuard)
+    @Post('files')
+    async uploadFiles(@User() user, @UploadedFiles() files: {photo:Express.Multer.File, documents: Express.Multer.File[]}) {
+     return files
     }
 
 }
