@@ -5,13 +5,16 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { AuthRegisterDTO } from "./dto/auth-register-dto";
 import { UserService } from "src/user/user.service";
 import * as bcrypt from 'bcrypt'
+import { MailerService } from "@nestjs-modules/mailer";
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly JWTService:JwtService,
         private readonly prisma:PrismaService,
-        private readonly userService:UserService){}
+        private readonly userService:UserService,
+        private readonly mailer:MailerService)
+        {}
 
     createToken({id, email, name}:User)
     {
@@ -67,17 +70,26 @@ export class AuthService {
 
     async reset(password:string, token:string)
     { 
-       const id = 0;
-       const user = this.prisma.user.update({
-        where:{
-            id
-        },
-        data:{
-            password
-        }
-       })
+        
+        try {
+            const data:any = this.JWTService.verify(token,{
+                issuer:'forget',
+                audience:'users',
+            })
+            console.log(data)
+            password = await bcrypt.hash(password, 10)
+            console.log(password)
+       
+            const user = await this.prisma.user.update({
+            where:{id:Number(data.id)},
+            data:{password}
+            });
 
-       return this.JWTService.sign(user);
+        return this.createToken(user)
+        
+        } catch (error) {
+            throw new BadRequestException(error)     
+        }
     }
     async forget(email:string)
     {
@@ -86,9 +98,30 @@ export class AuthService {
                 email
             }
         })   
+        
         if (!user) throw new UnauthorizedException('Email não existe!')
 
-        return true;
+        const token = this.JWTService.sign({
+            id:user.id
+        }, {
+            expiresIn:'20 minutes',
+            subject: String(user.id),
+            audience:'users',
+            issuer:"forget"
+            }
+        )
+            
+        await this.mailer.sendMail({
+            subject:"Recuperação de senha",
+            to:'gabrielrodrigonaga@gmail.com',
+            template:'forget',
+            context:{
+                name:user.name,
+                token
+            }
+        })
+
+        return {msg:"O token de troca de senha foi enviado para o seu e-mail."};
     }
 
     isValidToken(token:string)

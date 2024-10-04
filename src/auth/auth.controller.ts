@@ -37,7 +37,7 @@ export class AuthController{
     @Post('reset')
     async reset(@Body() {password, token}:AuthResetDTO)
     {
-        this.authService.reset(password, token)
+        return this.authService.reset(password, token)
     }
 
     @UseGuards(AuthGuard)
