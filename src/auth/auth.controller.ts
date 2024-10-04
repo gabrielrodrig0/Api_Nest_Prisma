@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Headers, UseGuards, UseInterceptors, UploadedFile, BadRequestException, UploadedFiles } from "@nestjs/common";
+import { Controller, Post, Body, Headers, UseGuards, UseInterceptors, UploadedFile, BadRequestException, UploadedFiles, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator } from "@nestjs/common";
 import { AuthLoginDTO } from "./dto/auth-login-dto";
 import { AuthRegisterDTO } from "./dto/auth-register-dto";
 import { AuthForgetDTO } from "./dto/auth-forget-dto";
@@ -50,7 +50,12 @@ export class AuthController{
     @UseInterceptors(FileInterceptor('file'))
     @UseGuards(AuthGuard)
     @Post('photo')
-    async uploadPhoto(@User() user, @UploadedFile() file: Express.Multer.File) {
+    async uploadPhoto(@User() user, @UploadedFile(new ParseFilePipe({
+        validators:[
+            new FileTypeValidator({fileType:'image/png'}),
+            new MaxFileSizeValidator({maxSize:1024*10})
+        ]
+    })) file: Express.Multer.File) {
        const path = `C:\\Users\\3470648\\Desktop\\Api_Nest_Prisma\\src\\storage\\photos\\photo-${user.id}.png`;
       try {
         await this.fileService.upload(file, path);
